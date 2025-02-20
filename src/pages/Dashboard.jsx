@@ -4,6 +4,8 @@ import { useAuth } from "../context/AuthProvider";
 import { MdDelete } from "react-icons/md";
 import { MdModeEdit } from "react-icons/md";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const tasks = [
   {
@@ -165,6 +167,11 @@ function Dashboard() {
     console.log(taskList);
   };
 
+  const handleDelete = () => {
+    console.log("task deleted");
+    toast.success("Task deleted successfully!");
+  };
+
   return (
     <div className="p-6 font-poppins bg-background min-h-screen">
       <div className="flex justify-between mb-20">
@@ -176,12 +183,15 @@ function Dashboard() {
         <Avatar />
       </div>
 
-      <button
-        type="button"
-        className="btn btn-accent text-white text-lg font-semibold"
-      >
-        Add new task
-      </button>
+      <Link to={"/add-task"}>
+        {" "}
+        <button
+          type="button"
+          className="btn btn-accent text-white text-lg font-semibold"
+        >
+          Add new task
+        </button>
+      </Link>
       <DragDropContext onDragEnd={handleOnDragEnd}>
         <div className="grid grid-cols-3 gap-6 mt-4">
           {taskList.map((taskCategory, categoryIndex) => (
@@ -222,12 +232,21 @@ function Dashboard() {
                                   <p className="text-sm">{t.description}</p>
                                 </div>
                                 <div className="space-x-2 flex">
-                                  <button className="cursor-pointer">
+                                  <button
+                                    className="cursor-pointer"
+                                    onClick={() =>
+                                      document
+                                        .getElementById("my_modal_5")
+                                        .showModal()
+                                    }
+                                  >
                                     <MdDelete className="text-red-500 text-lg" />
                                   </button>
-                                  <button className="cursor-pointer">
-                                    <MdModeEdit className="text-primary text-lg" />
-                                  </button>
+                                  <Link to={`/update-task/${t.id}`} state={t}>
+                                    <button className="cursor-pointer">
+                                      <MdModeEdit className="text-primary text-lg" />
+                                    </button>
+                                  </Link>
                                 </div>
                               </div>
                             </li>
@@ -243,6 +262,26 @@ function Dashboard() {
           ))}
         </div>
       </DragDropContext>
+      <dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Warning!</h3>
+          <p className="py-4">
+            Are you sure you want to delete this task? This action cannot be
+            undone.
+          </p>
+          <div className="modal-action">
+            <form method="dialog">
+              {/* if there is a button in form, it will close the modal */}
+              <div className="flex gap-2">
+                <button onClick={handleDelete} className="btn btn-error">
+                  Delete
+                </button>
+                <button className="btn">Close</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </dialog>
     </div>
   );
 }
