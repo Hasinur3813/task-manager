@@ -12,7 +12,7 @@ const tasks = [
       {
         id: 1,
         task: "Design Homepage",
-        status: "To Do",
+        status: "todo",
         priority: "High",
         deadline: "2025-02-25",
         assignee: "Alice Johnson",
@@ -22,7 +22,7 @@ const tasks = [
       {
         id: 4,
         task: "Research Competitor Analysis",
-        status: "To Do",
+        status: "todo",
         priority: "Medium",
         deadline: "2025-02-28",
         assignee: "John Smith",
@@ -32,7 +32,7 @@ const tasks = [
       {
         id: 8,
         task: "Write User Stories",
-        status: "To Do",
+        status: "todo",
         priority: "High",
         deadline: "2025-02-26",
         assignee: "Sophia Martinez",
@@ -47,7 +47,7 @@ const tasks = [
       {
         id: 2,
         task: "Develop Authentication System",
-        status: "In Progress",
+        status: "inProgress",
         priority: "High",
         deadline: "2025-02-22",
         assignee: "Emma Brown",
@@ -57,7 +57,7 @@ const tasks = [
       {
         id: 5,
         task: "Set Up Database Schema",
-        status: "In Progress",
+        status: "inProgress",
         priority: "Medium",
         deadline: "2025-02-23",
         assignee: "Michael Lee",
@@ -67,7 +67,7 @@ const tasks = [
       {
         id: 9,
         task: "Develop Task Drag-and-Drop Feature",
-        status: "In Progress",
+        status: "inProgress",
         priority: "High",
         deadline: "2025-02-27",
         assignee: "Olivia Taylor",
@@ -83,7 +83,7 @@ const tasks = [
       {
         id: 3,
         task: "Set Up Project Repository",
-        status: "Done",
+        status: "done",
         priority: "Low",
         completedOn: "2025-02-18",
         assignee: "David Wilson",
@@ -93,7 +93,7 @@ const tasks = [
       {
         id: 7,
         task: "Create Wireframes",
-        status: "Done",
+        status: "done",
         priority: "Medium",
         completedOn: "2025-02-17",
         assignee: "Olivia Taylor",
@@ -103,7 +103,7 @@ const tasks = [
       {
         id: 12,
         task: "Setup CI/CD Pipeline",
-        status: "Done",
+        status: "done",
         priority: "High",
         completedOn: "2025-02-19",
         assignee: "John Smith",
@@ -113,6 +113,11 @@ const tasks = [
     ],
   },
 ];
+const categoryStatusMap = {
+  0: "todo",
+  1: "inProgress",
+  2: "done",
+};
 
 function Dashboard() {
   const [taskList, setTaskList] = useState(tasks);
@@ -122,6 +127,11 @@ function Dashboard() {
     const { source, destination } = result;
 
     if (!destination) return; // Dropped outside the list
+    if (
+      source.droppableId === destination.droppableId &&
+      source.index === destination.index
+    )
+      return;
 
     // Reordering within the same category
     if (source.droppableId === destination.droppableId) {
@@ -136,19 +146,23 @@ function Dashboard() {
         movedTask
       );
       setTaskList(updatedTasks);
-      console.log(updatedTasks);
     } else {
       // Moving task between categories
       const sourceCategory = taskList[source.droppableId];
       const destinationCategory = taskList[destination.droppableId];
       const [movedTask] = sourceCategory.tasks.splice(source.index, 1);
+      movedTask.status = categoryStatusMap[destination.droppableId];
       destinationCategory.tasks.splice(destination.index, 0, movedTask);
       setTaskList([...taskList]);
-      console.log([...taskList]);
     }
 
     // // Save data to the database (make a POST or PUT request here)
-    // saveTaskDataToDB();
+    saveTaskDataToDB();
+  };
+
+  const saveTaskDataToDB = () => {
+    console.log("Saving task data to the database...");
+    console.log(taskList);
   };
 
   return (
