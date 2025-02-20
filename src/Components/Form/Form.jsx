@@ -9,13 +9,13 @@ const Form = ({
   task: data,
   setValue,
 }) => {
-  const { task, description, status } = data || {};
+  const { title, description, category } = data || {};
 
   useEffect(() => {
     if (data) {
-      setValue("title", task);
+      setValue("title", title);
       setValue("description", description);
-      setValue("category", status);
+      setValue("category", category);
     }
   }, [data, setValue]);
 
@@ -52,22 +52,23 @@ const Form = ({
       </div>
 
       {/* status */}
-      <div>
-        <label className="block font-medium text-gray-700">Category</label>
-        <select
-          {...register("category", { required: "Category is required" })}
-          className="w-full border rounded-lg p-2 mt-1 focus:ring-2 focus:ring-primary"
-        >
-          <option value="">Select Category</option>
-          <option value="todo">To-Do</option>
-          <option value="inProgress">In Progress</option>
-          <option value="done">Done</option>
-        </select>
-        {errors.category && (
-          <p className="text-red-500 text-sm">{errors.category.message}</p>
-        )}
-      </div>
-
+      {data && (
+        <div>
+          <label className="block font-medium text-gray-700">Category</label>
+          <select
+            {...register("category", { required: "Category is required" })}
+            className="w-full border rounded-lg p-2 mt-1 focus:ring-2 focus:ring-primary"
+          >
+            <option value="">Select Category</option>
+            <option value="todo">To-Do</option>
+            <option value="inProgress">In Progress</option>
+            <option value="done">Done</option>
+          </select>
+          {errors.category && (
+            <p className="text-red-500 text-sm">{errors.category.message}</p>
+          )}
+        </div>
+      )}
       <button
         type="submit"
         className="w-full bg-primary cursor-pointer text-white py-2 rounded-lg font-semibold hover:bg-primaryAccent transition duration-200"
@@ -75,7 +76,7 @@ const Form = ({
       >
         {loading ? (
           <span className="loading loading-spinner loading-sm"></span>
-        ) : task ? (
+        ) : title ? (
           "Update Task"
         ) : (
           "Add Task"

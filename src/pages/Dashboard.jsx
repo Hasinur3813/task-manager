@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Avatar from "../Components/PublicRoute/Avatar/Avatar";
 import { useAuth } from "../context/AuthProvider";
 import { MdDelete } from "react-icons/md";
@@ -6,6 +6,9 @@ import { MdModeEdit } from "react-icons/md";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import useTasks from "../hooks/useTasks";
+import Loader from "../Components/Loader/Loader";
+import useAxiosSecure from "../hooks/useAxiosSecure";
 
 const tasks = [
   {
@@ -14,7 +17,7 @@ const tasks = [
       {
         id: 1,
         task: "Design Homepage",
-        status: "todo",
+        category: "todo",
         priority: "High",
         deadline: "2025-02-25",
         assignee: "Alice Johnson",
@@ -24,7 +27,7 @@ const tasks = [
       {
         id: 4,
         task: "Research Competitor Analysis",
-        status: "todo",
+        category: "todo",
         priority: "Medium",
         deadline: "2025-02-28",
         assignee: "John Smith",
@@ -34,7 +37,7 @@ const tasks = [
       {
         id: 8,
         task: "Write User Stories",
-        status: "todo",
+        category: "todo",
         priority: "High",
         deadline: "2025-02-26",
         assignee: "Sophia Martinez",
@@ -49,7 +52,7 @@ const tasks = [
       {
         id: 2,
         task: "Develop Authentication System",
-        status: "inProgress",
+        category: "inProgress",
         priority: "High",
         deadline: "2025-02-22",
         assignee: "Emma Brown",
@@ -59,7 +62,7 @@ const tasks = [
       {
         id: 5,
         task: "Set Up Database Schema",
-        status: "inProgress",
+        category: "inProgress",
         priority: "Medium",
         deadline: "2025-02-23",
         assignee: "Michael Lee",
@@ -69,7 +72,7 @@ const tasks = [
       {
         id: 9,
         task: "Develop Task Drag-and-Drop Feature",
-        status: "inProgress",
+        category: "inProgress",
         priority: "High",
         deadline: "2025-02-27",
         assignee: "Olivia Taylor",
@@ -85,7 +88,7 @@ const tasks = [
       {
         id: 3,
         task: "Set Up Project Repository",
-        status: "done",
+        category: "done",
         priority: "Low",
         completedOn: "2025-02-18",
         assignee: "David Wilson",
@@ -95,7 +98,7 @@ const tasks = [
       {
         id: 7,
         task: "Create Wireframes",
-        status: "done",
+        category: "done",
         priority: "Medium",
         completedOn: "2025-02-17",
         assignee: "Olivia Taylor",
@@ -105,7 +108,7 @@ const tasks = [
       {
         id: 12,
         task: "Setup CI/CD Pipeline",
-        status: "done",
+        category: "done",
         priority: "High",
         completedOn: "2025-02-19",
         assignee: "John Smith",
@@ -115,14 +118,30 @@ const tasks = [
     ],
   },
 ];
-const categoryStatusMap = {
+const categorycategoryMap = {
   0: "todo",
   1: "inProgress",
   2: "done",
 };
 
 function Dashboard() {
-  const [taskList, setTaskList] = useState(tasks);
+  const { userTasks, refetch, isLoading } = useTasks();
+  const [taskList, setTaskList] = useState(userTasks || []);
+  const [toDelete, setToDelete] = useState(null);
+  const axios = useAxiosSecure();
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  useEffect(() => {
+    if (!isLoading && userTasks) {
+      setTaskList(userTasks);
+      console.log(userTasks);
+    } else {
+      setTaskList([]);
+    }
+  }, [userTasks, isLoading]);
 
   const { currentUser } = useAuth();
   const handleOnDragEnd = (result) => {
@@ -153,7 +172,7 @@ function Dashboard() {
       const sourceCategory = taskList[source.droppableId];
       const destinationCategory = taskList[destination.droppableId];
       const [movedTask] = sourceCategory.tasks.splice(source.index, 1);
-      movedTask.status = categoryStatusMap[destination.droppableId];
+      movedTask.category = categorycategoryMap[destination.droppableId];
       destinationCategory.tasks.splice(destination.index, 0, movedTask);
       setTaskList([...taskList]);
     }
@@ -167,9 +186,20 @@ function Dashboard() {
     console.log(taskList);
   };
 
-  const handleDelete = () => {
-    console.log("task deleted");
-    toast.success("Task deleted successfully!");
+  const handleDelete = async () => {
+    try {
+      const res = await axios.delete(`/tasks/delete/${toDelete}`);
+      if (res.data.data.deletedCount) {
+        toast.success("Task deleted successfully");
+        refetch();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleConfirmDelete = (id) => {
+    document.getElementById("my_modal_5").showModal();
+    setToDelete(id);
   };
 
   return (
@@ -194,72 +224,79 @@ function Dashboard() {
       </Link>
       <DragDropContext onDragEnd={handleOnDragEnd}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
-          {taskList.map((taskCategory, categoryIndex) => (
-            <Droppable
-              key={taskCategory.category}
-              droppableId={categoryIndex.toString()}
-            >
-              {(provided) => (
-                <div
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  className="bg-white p-4 shadow rounded"
-                >
-                  <h2 className="text-lg font-semibold">
-                    {taskCategory.category}
-                  </h2>
+          {taskList.length > 0 ? (
+            taskList.map((taskCategory, categoryIndex) => (
+              <Droppable
+                key={taskCategory.category}
+                droppableId={categoryIndex.toString()}
+              >
+                {(provided) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    className="bg-white p-4 shadow rounded"
+                  >
+                    <h2 className="text-xl font-semibold text-primary">
+                      {taskCategory.category === "todo"
+                        ? "To Do"
+                        : taskCategory.category === "inProgress"
+                        ? "In Progress"
+                        : "Done"}
+                    </h2>
 
-                  <div className="mt-4">
-                    <ul>
-                      {taskCategory.tasks.map((t, taskIndex) => (
-                        <Draggable
-                          key={t.id}
-                          draggableId={t.id.toString()}
-                          index={taskIndex}
-                        >
-                          {(provided) => (
-                            <li
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              className="border-b border-accent py-2"
-                            >
-                              <div className="flex justify-between items-center">
-                                <div>
-                                  <p className="text-base font-semibold mb-2">
-                                    {t.task}
-                                  </p>
-                                  <p className="text-sm">{t.description}</p>
-                                </div>
-                                <div className="space-x-2 flex">
-                                  <button
-                                    className="cursor-pointer"
-                                    onClick={() =>
-                                      document
-                                        .getElementById("my_modal_5")
-                                        .showModal()
-                                    }
-                                  >
-                                    <MdDelete className="text-red-500 text-lg" />
-                                  </button>
-                                  <Link to={`/update-task/${t.id}`} state={t}>
-                                    <button className="cursor-pointer">
-                                      <MdModeEdit className="text-primary text-lg" />
+                    <div className="mt-4">
+                      <ul>
+                        {taskCategory.tasks.map((t, taskIndex) => (
+                          <Draggable
+                            key={t._id}
+                            draggableId={t._id.toString()}
+                            index={taskIndex}
+                          >
+                            {(provided) => (
+                              <li
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                className="border-b border-accent py-2"
+                              >
+                                <div className="flex justify-between items-center">
+                                  <div>
+                                    <p className="text-base font-semibold mb-2">
+                                      {t.title}
+                                    </p>
+                                    <p className="text-sm">{t.description}</p>
+                                  </div>
+                                  <div className="gap-2 flex items-center">
+                                    <button
+                                      className="cursor-pointer"
+                                      onClick={() => handleConfirmDelete(t._id)}
+                                    >
+                                      <MdDelete className="text-red-500 text-3xl" />
                                     </button>
-                                  </Link>
+                                    <Link
+                                      to={`/update-task/${t._id}`}
+                                      state={t}
+                                    >
+                                      <button className="cursor-pointer">
+                                        <MdModeEdit className="text-primary text-2xl" />
+                                      </button>
+                                    </Link>
+                                  </div>
                                 </div>
-                              </div>
-                            </li>
-                          )}
-                        </Draggable>
-                      ))}
-                    </ul>
-                    {provided.placeholder}
+                              </li>
+                            )}
+                          </Draggable>
+                        ))}
+                      </ul>
+                      {provided.placeholder}
+                    </div>
                   </div>
-                </div>
-              )}
-            </Droppable>
-          ))}
+                )}
+              </Droppable>
+            ))
+          ) : (
+            <p>No tasks available</p>
+          )}
         </div>
       </DragDropContext>
       <dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">

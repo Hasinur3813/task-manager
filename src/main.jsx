@@ -8,8 +8,10 @@ import UpdateTask from "./pages/UpdateTask/UpdateTask.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Dashboard from "./pages/Dashboard.jsx";
 import PublicRoute from "./Components/PublicRoute/PublicRoute.jsx";
+import PrivateRoute from "./Components/PrivateRoute/PrivateRoute.jsx";
 import AddTask from "./pages/AddTask/AddTask.jsx";
 import { Toaster } from "react-hot-toast";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -21,7 +23,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/dashboard",
-    element: <Dashboard />,
+    element: (
+      <PrivateRoute>
+        <Dashboard />
+      </PrivateRoute>
+    ),
   },
   {
     path: "/add-task",
@@ -32,12 +38,16 @@ const router = createBrowserRouter([
     element: <UpdateTask />,
   },
 ]);
+
+const query = new QueryClient();
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <AuthProvider>
-      {/* toast container for toast notification */}
-      <Toaster />
-      <RouterProvider router={router} />
-    </AuthProvider>
+    <QueryClientProvider client={query}>
+      <AuthProvider>
+        {/* toast container for toast notification */}
+        <Toaster />
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </QueryClientProvider>
   </StrictMode>
 );

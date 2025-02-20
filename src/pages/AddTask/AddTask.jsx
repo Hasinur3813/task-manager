@@ -1,9 +1,12 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa6";
 import Form from "../../Components/Form/Form";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
+import { useAuth } from "../../context/AuthProvider";
+import useTasks from "../../hooks/useTasks";
 
 const AddTask = () => {
   const {
@@ -12,26 +15,34 @@ const AddTask = () => {
     formState: { errors },
     reset,
   } = useForm();
+  const { refetch } = useTasks();
 
+  const { currentUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const axios = useAxiosSecure();
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     setLoading(true);
 
     const newTask = {
       ...data,
+      category: "todo",
+      user: currentUser.email,
       timestamp: new Date().toISOString(),
     };
-
-    setTimeout(() => {
-      //   onTaskAdd(newTask);
-      toast.success("Task added successfully!");
-      console.log(newTask);
-      reset();
-      setLoading(false);
-      navigate("/dashboard");
-    }, 1000);
+    try {
+      const res = await axios.post("/add-task", newTask);
+      if (res.data.data.insertedId) {
+        toast.success("Task added successfully");
+        reset();
+        setLoading(false);
+        refetch();
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

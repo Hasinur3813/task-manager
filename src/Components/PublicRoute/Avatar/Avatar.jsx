@@ -2,7 +2,14 @@ import React from "react";
 import { useAuth } from "../../../context/AuthProvider";
 
 const Avatar = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, logout } = useAuth();
+  const handleLogOut = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="dropdown dropdown-end">
       <div
@@ -29,6 +36,7 @@ const Avatar = () => {
         </li>
         <li>
           <button
+            onClick={handleLogOut}
             className="text-red-500 font-semibold text-base"
             type="button"
           >

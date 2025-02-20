@@ -1,9 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./context/AuthProvider";
+import useAxiosSecure from "./hooks/useAxiosSecure";
+import toast from "react-hot-toast";
 
 function App() {
   const { signInWithGoogle, currentUser, logout } = useAuth();
   const navigate = useNavigate();
+  const axios = useAxiosSecure();
 
   const handleLogin = async () => {
     try {
@@ -14,7 +17,13 @@ function App() {
         photoURL: user.photoURL,
         id: user.uid,
       };
-      console.log(userData);
+      const res = await axios.post("/auth/login", userData);
+      if (res.data.data?.insertedId) {
+        toast.success("Registration successful");
+      }
+      if (res.data.type === "existing") {
+        toast.success("Login successful");
+      }
 
       navigate("/dashboard");
     } catch (error) {
