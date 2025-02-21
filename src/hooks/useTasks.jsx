@@ -12,10 +12,10 @@ const useTasks = () => {
     isPending,
     refetch,
   } = useQuery({
-    queryKey: ["userTasks", currentUser.email],
+    queryKey: ["userTasks", currentUser?.email],
     enabled: !!currentUser && !loading,
     queryFn: async () => {
-      const res = await axios.get(`/tasks/${currentUser.email}`);
+      const res = await axios.get(`/tasks/${currentUser?.email}`);
       return res.data.data;
     },
   });

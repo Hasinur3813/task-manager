@@ -42,6 +42,7 @@ const Form = ({
       <div>
         <label className="block font-medium text-gray-700">Description</label>
         <textarea
+          rows={5}
           {...register("description", { maxLength: 200 })}
           className="w-full border rounded-lg p-2 mt-1 focus:ring-2 focus:ring-primary"
           placeholder="Enter task description (optional)"
@@ -71,7 +72,7 @@ const Form = ({
       )}
       <button
         type="submit"
-        className="w-full bg-primary cursor-pointer text-white py-2 rounded-lg font-semibold hover:bg-primaryAccent transition duration-200"
+        className="w-full bg-accent cursor-pointer text-white py-2 rounded-lg font-semibold hover:bg-primaryAccent transition duration-200"
         disabled={loading}
       >
         {loading ? (

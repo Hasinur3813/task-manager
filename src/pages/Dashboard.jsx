@@ -9,22 +9,8 @@ import toast from "react-hot-toast";
 import useTasks from "../hooks/useTasks";
 import Loader from "../Components/Loader/Loader";
 import useAxiosSecure from "../hooks/useAxiosSecure";
+import Timestamp from "../Components/Timestamp/Timestamp";
 
-const tasks = [
-  {
-    category: "todo",
-    tasks: [],
-  },
-  {
-    category: "inProgress",
-    tasks: [],
-  },
-
-  {
-    category: "done",
-    tasks: [],
-  },
-];
 const categorycategoryMap = {
   0: "todo",
   1: "inProgress",
@@ -36,10 +22,6 @@ function Dashboard() {
   const [taskList, setTaskList] = useState(userTasks || []);
   const [toDelete, setToDelete] = useState(null);
   const axios = useAxiosSecure();
-
-  if (isLoading) {
-    return <Loader />;
-  }
 
   useEffect(() => {
     if (!isLoading && userTasks) {
@@ -89,8 +71,9 @@ function Dashboard() {
   };
 
   const saveTaskDataToDB = async (task) => {
+    const updatedTask = { ...task, modified: new Date().toISOString() };
     try {
-      const res = await axios.put(`/tasks/dnd/${task._id}`, task);
+      const res = await axios.put(`/tasks/dnd/${task._id}`, updatedTask);
       if (res.data.success) {
         refetch();
       }
@@ -117,6 +100,10 @@ function Dashboard() {
     document.getElementById("my_modal_5").showModal();
     setToDelete(id);
   };
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <div className="p-6 font-poppins bg-background min-h-screen">
@@ -152,7 +139,7 @@ function Dashboard() {
                     {...provided.droppableProps}
                     className="bg-white p-4 shadow rounded"
                   >
-                    <h2 className="text-xl font-semibold text-primary">
+                    <h2 className="text-xl font-bold ">
                       {taskCategory.category === "todo"
                         ? "To Do"
                         : taskCategory.category === "inProgress"
@@ -175,26 +162,29 @@ function Dashboard() {
                                 {...provided.dragHandleProps}
                                 className="border-b border-accent py-2"
                               >
-                                <div className="flex justify-between items-center">
+                                {/* title, description */}
+                                <p className="text-base font-semibold mb-2 text-primary">
+                                  {t.title}
+                                </p>
+                                <p className="text-sm">{t.description}</p>
+
+                                {/* timestamp and action buttons */}
+                                <div className="flex justify-between items-end">
+                                  {/* display time for creation/modified */}
                                   <div>
-                                    <p className="text-base font-semibold mb-2">
-                                      {t.title}
-                                    </p>
-                                    <p className="text-sm">{t.description}</p>
+                                    <Timestamp t={t} />
                                   </div>
-                                  <div className="gap-2 flex items-center">
+                                  {/* action button for tasks */}
+                                  <div className="gap-2 flex items-start">
                                     <button
                                       className="cursor-pointer"
                                       onClick={() => handleConfirmDelete(t._id)}
                                     >
-                                      <MdDelete className="text-red-500 text-3xl" />
+                                      <MdDelete className="text-red-500 text-2xl" />
                                     </button>
-                                    <Link
-                                      to={`/update-task/${t._id}`}
-                                      state={t}
-                                    >
+                                    <Link to={`/update-task/${t._id}`}>
                                       <button className="cursor-pointer">
-                                        <MdModeEdit className="text-primary text-2xl" />
+                                        <MdModeEdit className="text-accent text-2xl" />
                                       </button>
                                     </Link>
                                   </div>

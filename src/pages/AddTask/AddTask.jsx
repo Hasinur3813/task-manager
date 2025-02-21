@@ -7,6 +7,7 @@ import Form from "../../Components/Form/Form";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import { useAuth } from "../../context/AuthProvider";
 import useTasks from "../../hooks/useTasks";
+import Loader from "../../Components/Loader/Loader";
 
 const AddTask = () => {
   const {
@@ -17,7 +18,7 @@ const AddTask = () => {
   } = useForm();
   const { refetch } = useTasks();
 
-  const { currentUser } = useAuth();
+  const { currentUser, loading: userLoading } = useAuth();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const axios = useAxiosSecure();
@@ -45,27 +46,33 @@ const AddTask = () => {
     }
   };
 
-  return (
-    <div className="max-w-lg mx-auto p-6 bg-slate-200 shadow-lg rounded-lg mt-10">
-      {/* link to go back */}
-      <Link
-        to={"/dashboard"}
-        className="flex gap-1 text-blue-500 items-center font-semibold mb-5"
-      >
-        <FaArrowLeft /> Go Back
-      </Link>
-      {/* form heading */}
-      <h2 className="text-2xl font-bold mb-4 text-gray-800">Add New Task</h2>
+  if (userLoading) {
+    return <Loader />;
+  }
 
-      {/* form */}
-      <Form
-        handleSubmit={handleSubmit}
-        onFormSubmit={onSubmit}
-        register={register}
-        errors={errors}
-        loading={loading}
-      />
-    </div>
+  return (
+    <section className="px-3">
+      <div className="max-w-lg mx-auto px-6 py-12 bg-slate-200 shadow-lg rounded-lg mt-10">
+        {/* link to go back */}
+        <Link
+          to={"/dashboard"}
+          className="flex gap-1 text-primary items-center font-semibold mb-5"
+        >
+          <FaArrowLeft /> Go Back
+        </Link>
+        {/* form heading */}
+        <h2 className="text-2xl font-bold mb-4 text-gray-800">Add New Task</h2>
+
+        {/* form */}
+        <Form
+          handleSubmit={handleSubmit}
+          onFormSubmit={onSubmit}
+          register={register}
+          errors={errors}
+          loading={loading}
+        />
+      </div>
+    </section>
   );
 };
 
