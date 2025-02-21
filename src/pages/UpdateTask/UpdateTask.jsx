@@ -9,7 +9,7 @@ import { useAuth } from "../../context/AuthProvider";
 import { useQuery } from "@tanstack/react-query";
 import Loader from "../../Components/Loader/Loader";
 
-const AddTask = () => {
+const UpdateTask = () => {
   const {
     register,
     handleSubmit,
@@ -83,4 +83,4 @@ const AddTask = () => {
   );
 };
 
-export default AddTask;
+export default UpdateTask;

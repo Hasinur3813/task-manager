@@ -10,32 +10,32 @@ import useTasks from "../hooks/useTasks";
 import Loader from "../Components/Loader/Loader";
 import useAxiosSecure from "../hooks/useAxiosSecure";
 import Timestamp from "../Components/Timestamp/Timestamp";
+import Modal from "../Components/Modal/Modal";
+import io from "socket.io-client";
+import { useTaskContext } from "../context/TaskProvider";
+const socket = io("http://localhost:3000");
 
-const categorycategoryMap = {
+const categoryMap = {
   0: "todo",
   1: "inProgress",
   2: "done",
 };
 
 function Dashboard() {
-  const { userTasks, refetch, isLoading } = useTasks();
-  const [taskList, setTaskList] = useState(userTasks || []);
+  // const [taskList, setTaskList] = useState(userTasks || []);
   const [toDelete, setToDelete] = useState(null);
   const axios = useAxiosSecure();
-
-  useEffect(() => {
-    if (!isLoading && userTasks) {
-      setTaskList(userTasks);
-    } else {
-      setTaskList([]);
-    }
-  }, [userTasks, isLoading]);
+  const {
+    tasks: taskList,
+    isLoading,
+    setTasks: setTaskList,
+  } = useTaskContext();
 
   const { currentUser } = useAuth();
   const handleOnDragEnd = (result) => {
     const { source, destination } = result;
 
-    if (!destination) return; // Dropped outside the list
+    if (!destination) return;
     if (
       source.droppableId === destination.droppableId &&
       source.index === destination.index
@@ -60,7 +60,7 @@ function Dashboard() {
       const sourceCategory = taskList[source.droppableId];
       const destinationCategory = taskList[destination.droppableId];
       const [movedTask] = sourceCategory.tasks.splice(source.index, 1);
-      movedTask.category = categorycategoryMap[destination.droppableId];
+      movedTask.category = categoryMap[destination.droppableId];
       destinationCategory.tasks.splice(destination.index, 0, movedTask);
       setTaskList([...taskList]);
 
@@ -75,7 +75,7 @@ function Dashboard() {
     try {
       const res = await axios.put(`/tasks/dnd/${task._id}`, updatedTask);
       if (res.data.success) {
-        refetch();
+        // refetch();
       }
     } catch (error) {
       toast.error("Operation failed, Please try again!");
@@ -127,10 +127,12 @@ function Dashboard() {
       </Link>
       <DragDropContext onDragEnd={handleOnDragEnd}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
-          {taskList.length > 0 ? (
+          {isLoading ? (
+            <Loader />
+          ) : taskList.length > 0 ? (
             taskList.map((taskCategory, categoryIndex) => (
               <Droppable
-                key={taskCategory.category}
+                key={categoryIndex}
                 droppableId={categoryIndex.toString()}
               >
                 {(provided) => (
@@ -201,30 +203,15 @@ function Dashboard() {
               </Droppable>
             ))
           ) : (
-            <p>No tasks available</p>
+            <h2 className="font-semibold text-center my-20 text-3xl text-primary">
+              No tasks available
+            </h2>
           )}
         </div>
       </DragDropContext>
-      <dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
-        <div className="modal-box">
-          <h3 className="font-bold text-lg">Warning!</h3>
-          <p className="py-4">
-            Are you sure you want to delete this task? This action cannot be
-            undone.
-          </p>
-          <div className="modal-action">
-            <form method="dialog">
-              {/* if there is a button in form, it will close the modal */}
-              <div className="flex gap-2">
-                <button onClick={handleDelete} className="btn btn-error">
-                  Delete
-                </button>
-                <button className="btn">Close</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </dialog>
+
+      {/* modal for confirm deletation */}
+      <Modal handleDelete={handleDelete} />
     </div>
   );
 }

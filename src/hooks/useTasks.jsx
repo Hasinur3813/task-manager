@@ -9,7 +9,7 @@ const useTasks = () => {
 
   const {
     data: userTasks,
-    isPending,
+    isLoading,
     refetch,
   } = useQuery({
     queryKey: ["userTasks", currentUser?.email],
@@ -20,7 +20,7 @@ const useTasks = () => {
     },
   });
 
-  return { userTasks, isPending, refetch };
+  return { userTasks, isLoading, refetch };
 };
 
 export default useTasks;

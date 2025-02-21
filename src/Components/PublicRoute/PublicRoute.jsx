@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthProvider";
+import Loader from "../Loader/Loader";
 
 const PublicRoute = ({ children }) => {
   const { currentUser, loading } = useAuth();
@@ -17,7 +18,7 @@ const PublicRoute = ({ children }) => {
   }, [loading, currentUser, navigate]);
 
   if (!isInitialized) {
-    return <h2>Loding...</h2>;
+    return <Loader />;
   }
 
   return children;

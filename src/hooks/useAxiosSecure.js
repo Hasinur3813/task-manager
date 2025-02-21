@@ -5,8 +5,8 @@ import { useAuth } from "../context/AuthProvider";
 import { useEffect } from "react";
 
 const axiosInstance = axios.create({
-  baseURL: "https://task-manager-flax-eta.vercel.app",
-  // baseURL: "http://localhost:3000",
+  // baseURL: "https://task-manager-flax-eta.vercel.app",
+  baseURL: "http://localhost:3000",
   timeout: 10000,
 });
 
