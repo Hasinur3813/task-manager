@@ -4,6 +4,10 @@ import toast, { Toaster } from "react-hot-toast";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa6";
 import Form from "../../Components/Form/Form";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
+import { useAuth } from "../../context/AuthProvider";
+import { useQuery } from "@tanstack/react-query";
+import Loader from "../../Components/Loader/Loader";
 
 const AddTask = () => {
   const {
@@ -18,24 +22,41 @@ const AddTask = () => {
   const id = params?.id;
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const axios = useAxiosSecure();
+  const { currentUser } = useAuth();
 
-  const onSubmit = (data) => {
+  const { data: singleTask, isLoading } = useQuery({
+    queryKey: ["singleTask", currentUser?.email],
+    queryFn: async () => {
+      const res = await axios.get(`/tasks/single-task/${id}`);
+      return res.data.data;
+    },
+  });
+
+  const onSubmit = async (data) => {
     setLoading(true);
 
     const newTask = {
       ...data,
-      timestamp: new Date().toISOString(),
+      user: currentUser.email,
+      modified: new Date().toISOString(),
     };
-
-    setTimeout(() => {
-      //   onTaskAdd(newTask);
-      toast.success("Task updated successfully!");
-      console.log(newTask);
-      reset();
+    try {
+      setLoading(true);
+      const res = await axios.put(`/tasks/update/${id}`, newTask);
+      console.log(res.data);
+      if (res.data?.success) {
+        toast.success(res.data?.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Faild to update, Please try again!");
+    } finally {
       setLoading(false);
-      navigate("/dashboard");
-    }, 1000);
+    }
   };
+
+  if (isLoading) return <Loader />;
 
   return (
     <div className="max-w-lg mx-auto p-6 bg-slate-200 shadow-lg rounded-lg mt-10">
@@ -59,7 +80,7 @@ const AddTask = () => {
         register={register}
         errors={errors}
         loading={loading}
-        task={state}
+        task={singleTask}
         setValue={setValue}
       />
     </div>

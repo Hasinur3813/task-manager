@@ -137,7 +137,6 @@ function Dashboard() {
   useEffect(() => {
     if (!isLoading && userTasks) {
       setTaskList(userTasks);
-      console.log(userTasks);
     } else {
       setTaskList([]);
     }
@@ -193,8 +192,10 @@ function Dashboard() {
         toast.success("Task deleted successfully");
         refetch();
       }
-    } catch (error) {
-      console.log(error);
+    } catch {
+      toast.error("Operation failed, please try again!");
+    } finally {
+      setToDelete(null);
     }
   };
   const handleConfirmDelete = (id) => {
