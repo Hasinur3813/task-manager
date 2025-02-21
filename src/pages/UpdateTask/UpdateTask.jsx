@@ -44,12 +44,11 @@ const AddTask = () => {
     try {
       setLoading(true);
       const res = await axios.put(`/tasks/update/${id}`, newTask);
-      console.log(res.data);
       if (res.data?.success) {
         toast.success(res.data?.message);
+        navigate("/dashboard");
       }
-    } catch (error) {
-      console.log(error);
+    } catch {
       toast.error("Faild to update, Please try again!");
     } finally {
       setLoading(false);

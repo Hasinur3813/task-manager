@@ -12,110 +12,17 @@ import useAxiosSecure from "../hooks/useAxiosSecure";
 
 const tasks = [
   {
-    category: "Todo",
-    tasks: [
-      {
-        id: 1,
-        task: "Design Homepage",
-        category: "todo",
-        priority: "High",
-        deadline: "2025-02-25",
-        assignee: "Alice Johnson",
-        description:
-          "Create a modern and responsive homepage design using Figma. Ensure mobile and desktop compatibility.",
-      },
-      {
-        id: 4,
-        task: "Research Competitor Analysis",
-        category: "todo",
-        priority: "Medium",
-        deadline: "2025-02-28",
-        assignee: "John Smith",
-        description:
-          "Analyze competitor websites, identify key features, and prepare a comparison report for UI/UX improvements.",
-      },
-      {
-        id: 8,
-        task: "Write User Stories",
-        category: "todo",
-        priority: "High",
-        deadline: "2025-02-26",
-        assignee: "Sophia Martinez",
-        description:
-          "Define user stories for the task management application to improve user experience and feature planning.",
-      },
-    ],
+    category: "todo",
+    tasks: [],
   },
   {
-    category: "In Progress",
-    tasks: [
-      {
-        id: 2,
-        task: "Develop Authentication System",
-        category: "inProgress",
-        priority: "High",
-        deadline: "2025-02-22",
-        assignee: "Emma Brown",
-        description:
-          "Implement email/password authentication with Firebase. Add OAuth options for Google and GitHub.",
-      },
-      {
-        id: 5,
-        task: "Set Up Database Schema",
-        category: "inProgress",
-        priority: "Medium",
-        deadline: "2025-02-23",
-        assignee: "Michael Lee",
-        description:
-          "Design and implement a MongoDB schema for users, tasks, and project details.",
-      },
-      {
-        id: 9,
-        task: "Develop Task Drag-and-Drop Feature",
-        category: "inProgress",
-        priority: "High",
-        deadline: "2025-02-27",
-        assignee: "Olivia Taylor",
-        description:
-          "Implement a drag-and-drop functionality using React DnD to allow smooth task movement between categories.",
-      },
-    ],
+    category: "inProgress",
+    tasks: [],
   },
 
   {
-    category: "Done",
-    tasks: [
-      {
-        id: 3,
-        task: "Set Up Project Repository",
-        category: "done",
-        priority: "Low",
-        completedOn: "2025-02-18",
-        assignee: "David Wilson",
-        description:
-          "Initialized GitHub repository with README, license, and contribution guidelines.",
-      },
-      {
-        id: 7,
-        task: "Create Wireframes",
-        category: "done",
-        priority: "Medium",
-        completedOn: "2025-02-17",
-        assignee: "Olivia Taylor",
-        description:
-          "Designed low-fidelity wireframes for the landing page, dashboard, and task manager sections.",
-      },
-      {
-        id: 12,
-        task: "Setup CI/CD Pipeline",
-        category: "done",
-        priority: "High",
-        completedOn: "2025-02-19",
-        assignee: "John Smith",
-        description:
-          "Configured GitHub Actions for automatic deployment and testing on every push.",
-      },
-    ],
+    category: "done",
+    tasks: [],
   },
 ];
 const categorycategoryMap = {
@@ -174,15 +81,23 @@ function Dashboard() {
       movedTask.category = categorycategoryMap[destination.droppableId];
       destinationCategory.tasks.splice(destination.index, 0, movedTask);
       setTaskList([...taskList]);
+
+      saveTaskDataToDB(movedTask);
     }
 
     // // Save data to the database (make a POST or PUT request here)
-    saveTaskDataToDB();
   };
 
-  const saveTaskDataToDB = () => {
-    console.log("Saving task data to the database...");
-    console.log(taskList);
+  const saveTaskDataToDB = async (task) => {
+    try {
+      const res = await axios.put(`/tasks/dnd/${task._id}`, task);
+      if (res.data.success) {
+        refetch();
+      }
+    } catch (error) {
+      toast.error("Operation failed, Please try again!");
+      console.error("Error updating task:", error);
+    }
   };
 
   const handleDelete = async () => {
