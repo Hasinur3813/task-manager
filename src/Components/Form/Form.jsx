@@ -23,14 +23,16 @@ const Form = ({
     <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
       {/* title */}
       <div>
-        <label className="block font-medium text-gray-700">Title</label>
+        <label className="block font-medium text-gray-700 dark:text-white">
+          Title
+        </label>
         <input
           {...register("title", {
             required: "Title is required",
             maxLength: 50,
           })}
           type="text"
-          className="w-full border rounded-lg p-2 mt-1 focus:ring-2 focus:ring-primary"
+          className="w-full dark:bg-slate-700 dark:placeholder-gray-400 dark:text-white dark:border-none border rounded-lg p-2 mt-1 focus:ring-2 focus:ring-primary"
           placeholder="Enter task title"
         />
         {errors.title && (
@@ -40,11 +42,13 @@ const Form = ({
 
       {/* description */}
       <div>
-        <label className="block font-medium text-gray-700">Description</label>
+        <label className="block font-medium text-gray-700 dark:text-white">
+          Description
+        </label>
         <textarea
           rows={5}
           {...register("description", { maxLength: 200 })}
-          className="w-full border rounded-lg p-2 mt-1 focus:ring-2 focus:ring-primary"
+          className="w-full dark:bg-slate-700 dark:placeholder-gray-400 dark:text-white dark:border-none border rounded-lg p-2 mt-1 focus:ring-2 focus:ring-primary"
           placeholder="Enter task description (optional)"
         ></textarea>
         {errors.description && (
@@ -55,10 +59,12 @@ const Form = ({
       {/* status */}
       {data && (
         <div>
-          <label className="block font-medium text-gray-700">Category</label>
+          <label className="block font-medium text-gray-700 dark:text-white">
+            Category
+          </label>
           <select
             {...register("category", { required: "Category is required" })}
-            className="w-full border rounded-lg p-2 mt-1 focus:ring-2 focus:ring-primary"
+            className="w-full dark:bg-slate-700 dark:placeholder-gray-400 dark:text-white dark:border-none border rounded-lg p-2 mt-1 focus:ring-2 focus:ring-primary"
           >
             <option value="">Select Category</option>
             <option value="todo">To-Do</option>

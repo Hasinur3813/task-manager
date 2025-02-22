@@ -15,7 +15,7 @@ const Avatar = () => {
       <div
         tabIndex={0}
         role="button"
-        className="btn btn-ghost ring-2 ring-primary ring-offset-2 btn-circle avatar"
+        className="btn btn-ghost ring-3 dark:ring-accent ring-primary ring-offset-2 btn-circle avatar"
       >
         <div className="w-10 rounded-full">
           <img

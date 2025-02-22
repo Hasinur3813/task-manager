@@ -56,12 +56,12 @@ const UpdateTask = () => {
   if (isLoading) return <Loader />;
 
   return (
-    <section className="px-3">
-      <div className="max-w-lg mx-auto px-6 py-12 bg-slate-200 shadow-lg rounded-lg mt-10">
+    <section className="px-3 min-h-screen flex justify-center items-center dark:bg-slate-900">
+      <div className="max-w-lg w-full mx-auto px-6 py-12 bg-slate-200 dark:bg-slate-800 shadow-lg rounded-lg mt-10">
         {/* link to go back */}
         <Link
           to={"/dashboard"}
-          className="flex gap-1 text-primary items-center font-semibold mb-5"
+          className="flex gap-1 text-primary items-center font-semibold mb-5 dark:text-accent"
         >
           <FaArrowLeft /> Go Back
         </Link>

@@ -11,6 +11,8 @@ import Loader from "../Components/Loader/Loader";
 import useAxiosSecure from "../hooks/useAxiosSecure";
 import Timestamp from "../Components/Timestamp/Timestamp";
 import Modal from "../Components/Modal/Modal";
+import { useTheme } from "../context/ThemeProvider";
+import { FaMoon, FaSun } from "react-icons/fa6";
 
 const categoryMap = {
   0: "todo",
@@ -33,6 +35,7 @@ function Dashboard() {
   }, [userTasks, isLoading]);
 
   const { currentUser } = useAuth();
+  const { theme, handleDarkmode } = useTheme();
   const handleOnDragEnd = (result) => {
     const { source, destination } = result;
 
@@ -105,14 +108,26 @@ function Dashboard() {
   }
 
   return (
-    <div className="p-6 font-poppins bg-background min-h-screen">
+    <div className="p-6 font-poppins bg-background dark:bg-slate-900 min-h-screen">
       <div className="flex justify-between mb-20">
-        <h1 className="text-2xl font-bold">
+        <h1 className="text-lg sm:text-2xl font-bold dark:text-white">
           Welcome,{" "}
-          <span className="text-primary">{currentUser?.displayName}</span>
+          <span className="text-primary dark:text-accent">
+            {currentUser?.displayName}
+          </span>
         </h1>
 
-        <Avatar />
+        <div className="flex items-center gap-3">
+          <button onClick={handleDarkmode} className="text-xl cursor-pointer ">
+            {theme === "dark" ? (
+              <FaSun className="text-2xl dark:text-white" />
+            ) : (
+              <FaMoon className="text-2xl dark:text-white" />
+            )}
+          </button>
+
+          <Avatar />
+        </div>
       </div>
 
       <Link to={"/add-task"}>
@@ -138,9 +153,9 @@ function Dashboard() {
                   <div
                     ref={provided.innerRef}
                     {...provided.droppableProps}
-                    className="bg-white p-4 shadow rounded"
+                    className="bg-white dark:bg-slate-800 p-4 shadow rounded"
                   >
-                    <h2 className="text-xl font-bold ">
+                    <h2 className="text-xl font-bold dark:text-white">
                       {taskCategory.category === "todo"
                         ? "To Do"
                         : taskCategory.category === "inProgress"
@@ -164,10 +179,12 @@ function Dashboard() {
                                 className="border-b border-accent py-2"
                               >
                                 {/* title, description */}
-                                <p className="text-base font-semibold mb-2 text-primary">
+                                <p className="text-base font-semibold mb-2 text-primary dark:text-accent">
                                   {t.title}
                                 </p>
-                                <p className="text-sm">{t.description}</p>
+                                <p className="text-sm dark:text-white">
+                                  {t.description}
+                                </p>
 
                                 {/* timestamp and action buttons */}
                                 <div className="flex justify-between items-end">

@@ -6,7 +6,7 @@ import { useEffect } from "react";
 
 const axiosInstance = axios.create({
   baseURL: "https://task-manager-flax-eta.vercel.app",
-  // baseURL: "https://task-manager-server-nzvr.onrender.com",
+  // baseURL: import.meta.env.API_BASE_URL,
   // baseURL: "http://localhost:3000",
   timeout: 10000,
 });

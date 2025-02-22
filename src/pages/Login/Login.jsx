@@ -51,10 +51,10 @@ function Login() {
           </p>
           <button
             onClick={handleLogin}
-            className="mt-6 bg-primary hover:bg-primary/80 cursor-pointer text-lg font-semibold text-white w-full py-2 px-4 rounded-lg flex justify-center items-center gap-3"
+            className="mt-6 bg-primary hover:bg-primary/80 cursor-pointer text-lg font-semibold text-white w-full py-3 px-4 rounded-lg flex justify-center items-center gap-3"
           >
-            <FaGoogle />
-            <span> Sign in with Google</span>
+            <FaGoogle className="text-xl" />
+            <span className="leading-none">Sign in with Google</span>
           </button>
         </>
       </div>
