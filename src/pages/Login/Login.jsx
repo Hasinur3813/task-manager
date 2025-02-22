@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { FaArrowLeft, FaGoogle } from "react-icons/fa6";
 
 function Login() {
-  const { signInWithGoogle, currentUser, logout } = useAuth();
+  const { signInWithGoogle } = useAuth();
   const navigate = useNavigate();
   const axios = useAxiosSecure();
 
@@ -36,7 +36,6 @@ function Login() {
     <div className="flex flex-col justify-center items-center h-screen bg-gradient-to-br from-blue-500 to-purple-600 dark:bg-gray-900 text-white px-4">
       <div className="absolute top-6 left-6">
         <button
-          variant="ghost"
           className="flex items-center gap-1 cursor-pointer"
           onClick={() => navigate("/")}
         >

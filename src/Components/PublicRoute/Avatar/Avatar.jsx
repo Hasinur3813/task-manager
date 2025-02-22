@@ -1,4 +1,3 @@
-import React from "react";
 import { useAuth } from "../../../context/AuthProvider";
 
 const Avatar = () => {
@@ -15,14 +14,10 @@ const Avatar = () => {
       <div
         tabIndex={0}
         role="button"
-        className="btn btn-ghost ring-3 dark:ring-accent ring-primary ring-offset-2 btn-circle avatar"
+        className="btn btn-ghost ring-3 dark:ring-accent ring-primary w-8 h-8 ring-offset-2 btn-circle avatar"
       >
-        <div className="w-10 rounded-full">
-          <img
-            src={currentUser?.photoURL}
-            alt="Profile"
-            className="rounded-full w-10"
-          />
+        <div className="rounded-full">
+          <img src={currentUser?.photoURL} alt="Profile" />
         </div>
       </div>
       <ul

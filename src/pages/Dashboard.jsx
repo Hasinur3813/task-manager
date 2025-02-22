@@ -26,6 +26,8 @@ function Dashboard() {
   const [toDelete, setToDelete] = useState(null);
   const axios = useAxiosSecure();
 
+  // console.log(import.meta.env.API_BASE_URL);
+
   useEffect(() => {
     if (!isLoading && userTasks) {
       setTaskList(userTasks);
@@ -110,14 +112,14 @@ function Dashboard() {
   return (
     <div className="p-6 font-poppins bg-background dark:bg-slate-900 min-h-screen">
       <div className="flex justify-between mb-20">
-        <h1 className="text-lg sm:text-2xl font-bold dark:text-white">
-          Welcome,{" "}
+        <h1 className="text-xl sm:text-2xl font-bold dark:text-white">
+          Welcome, <br />
           <span className="text-primary dark:text-accent">
             {currentUser?.displayName}
           </span>
         </h1>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <button onClick={handleDarkmode} className="text-xl cursor-pointer ">
             {theme === "dark" ? (
               <FaSun className="text-2xl dark:text-white" />
