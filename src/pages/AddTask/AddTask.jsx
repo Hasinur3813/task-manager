@@ -16,7 +16,7 @@ const AddTask = () => {
     formState: { errors },
     reset,
   } = useForm();
-  // const { refetch } = useTasks();
+  const { refetch } = useTasks();
 
   const { currentUser, loading: userLoading } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -38,7 +38,7 @@ const AddTask = () => {
         toast.success("Task added successfully");
         reset();
         setLoading(false);
-        // refetch();
+        refetch();
         navigate("/dashboard");
       }
     } catch (error) {

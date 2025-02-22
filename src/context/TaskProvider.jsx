@@ -3,6 +3,7 @@ import io from "socket.io-client";
 import useTasks from "../hooks/useTasks";
 
 const TaskContext = createContext();
+// const socket = io("https://task-manager-server-nzvr.onrender.com");
 const socket = io("http://localhost:3000");
 
 export const TaskProvider = ({ children }) => {
@@ -30,7 +31,7 @@ export const TaskProvider = ({ children }) => {
           return prevTask.map((task) => {
             if (task.category === change.fullDocument.category) {
               return {
-                ...task.category,
+                ...task,
                 tasks: [...task.tasks, change.fullDocument],
               };
             } else {
@@ -38,22 +39,33 @@ export const TaskProvider = ({ children }) => {
             }
           });
         }
+
+        // task updating logic
+
         if (change.operationType === "update") {
           return prevTask.map((task) => {
-            return {
-              ...task.category,
-              tasks: task.tasks.map((task) =>
-                task._id === change.documentKey._id
-                  ? { ...task, ...change.updateDescription.updatedFields }
-                  : task
-              ),
-            };
+            const updatedId = change.documentKey._id;
+            const findUpdatedTask = task.tasks.find((t) => t._id === updatedId);
+            if (findUpdatedTask) {
+              return {
+                ...task,
+                tasks: task.tasks.map((task) =>
+                  task._id === updatedId
+                    ? { ...task, ...change.updateDescription.updatedFields }
+                    : task
+                ),
+              };
+            } else {
+              return task;
+            }
           });
         }
+
+        // task deletion logic
         if (change.operationType === "delete") {
           return prevTask.map((task) => {
             return {
-              ...task.category,
+              ...task,
               tasks: task.tasks.filter((task) => {
                 return task._id !== change.documentKey._id;
               }),

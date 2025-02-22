@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import App from "./App.jsx";
+import Login from "./pages/Login/Login.jsx";
 import AuthProvider from "./context/AuthProvider.jsx";
 import UpdateTask from "./pages/UpdateTask/UpdateTask.jsx";
 
@@ -12,44 +12,47 @@ import PrivateRoute from "./Components/PrivateRoute/PrivateRoute.jsx";
 import AddTask from "./pages/AddTask/AddTask.jsx";
 import { Toaster } from "react-hot-toast";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { TaskProvider } from "./context/TaskProvider.jsx";
+import HomePage from "./pages/HomePage/HomePage.jsx";
+
 const router = createBrowserRouter([
   {
     path: "/",
     element: (
       <PublicRoute>
-        <App />
+        <HomePage />,
+      </PublicRoute>
+    ),
+  },
+  {
+    path: "/login",
+    element: (
+      <PublicRoute>
+        <Login />
       </PublicRoute>
     ),
   },
   {
     path: "/dashboard",
     element: (
-      <TaskProvider>
-        <PrivateRoute>
-          <Dashboard />
-        </PrivateRoute>
-      </TaskProvider>
+      <PrivateRoute>
+        <Dashboard />
+      </PrivateRoute>
     ),
   },
   {
     path: "/add-task",
     element: (
-      <TaskProvider>
-        <PrivateRoute>
-          <AddTask />,
-        </PrivateRoute>
-      </TaskProvider>
+      <PrivateRoute>
+        <AddTask />,
+      </PrivateRoute>
     ),
   },
   {
     path: "/update-task/:id",
     element: (
-      <TaskProvider>
-        <PrivateRoute>
-          <UpdateTask />,
-        </PrivateRoute>
-      </TaskProvider>
+      <PrivateRoute>
+        <UpdateTask />,
+      </PrivateRoute>
     ),
   },
 ]);

@@ -11,9 +11,6 @@ import Loader from "../Components/Loader/Loader";
 import useAxiosSecure from "../hooks/useAxiosSecure";
 import Timestamp from "../Components/Timestamp/Timestamp";
 import Modal from "../Components/Modal/Modal";
-import io from "socket.io-client";
-import { useTaskContext } from "../context/TaskProvider";
-const socket = io("http://localhost:3000");
 
 const categoryMap = {
   0: "todo",
@@ -22,14 +19,18 @@ const categoryMap = {
 };
 
 function Dashboard() {
-  // const [taskList, setTaskList] = useState(userTasks || []);
+  const { userTasks, refetch, isLoading } = useTasks();
+  const [taskList, setTaskList] = useState(userTasks || []);
   const [toDelete, setToDelete] = useState(null);
   const axios = useAxiosSecure();
-  const {
-    tasks: taskList,
-    isLoading,
-    setTasks: setTaskList,
-  } = useTaskContext();
+
+  useEffect(() => {
+    if (!isLoading && userTasks) {
+      setTaskList(userTasks);
+    } else {
+      setTaskList([]);
+    }
+  }, [userTasks, isLoading]);
 
   const { currentUser } = useAuth();
   const handleOnDragEnd = (result) => {
@@ -66,8 +67,6 @@ function Dashboard() {
 
       saveTaskDataToDB(movedTask);
     }
-
-    // // Save data to the database (make a POST or PUT request here)
   };
 
   const saveTaskDataToDB = async (task) => {
@@ -75,7 +74,7 @@ function Dashboard() {
     try {
       const res = await axios.put(`/tasks/dnd/${task._id}`, updatedTask);
       if (res.data.success) {
-        // refetch();
+        refetch();
       }
     } catch (error) {
       toast.error("Operation failed, Please try again!");
@@ -132,7 +131,7 @@ function Dashboard() {
           ) : taskList.length > 0 ? (
             taskList.map((taskCategory, categoryIndex) => (
               <Droppable
-                key={categoryIndex}
+                key={taskCategory.category}
                 droppableId={categoryIndex.toString()}
               >
                 {(provided) => (
